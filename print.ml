@@ -4,22 +4,18 @@ open Printf
 let print_var (v: var): string = 
   Printf.sprintf "#(%d)" v;;
 
-let print_single_term (t: term_single): string =
-  match t with
-  | Var v -> print_var v
-  | Val v -> Printf.sprintf "%d" v;;
-
-let rec print_term_list (t: term_any list): string =
+let rec print_term_list (t: term list): string =
   match t with
   | [] -> ""
   | hd::tl -> 
       let hd_string = print_term hd in
       let tl_string = print_term_list tl in
       Printf.sprintf "%s %s" hd_string tl_string
-and print_term (t: term_any): string =
+and print_term (t: term): string =
   match t with
   | Empty -> ""
-  | Single t -> print_single_term t
+  | Var v -> print_var v
+  | Val v -> Printf.sprintf "%d" v
   | List t -> Printf.sprintf "(%s)" (print_term_list t);;
 
 let rec print_substitution_helper (s: substitution) = 

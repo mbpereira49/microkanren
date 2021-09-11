@@ -4,26 +4,23 @@ let mzero: stream = [];;
 let unit (st: state) = st::mzero;;
 
 let var_eq (v1: var) (v2: var): bool = v1 = v2;;
-
-let rec walk_single (u: term_single) (s: substitution): term_any = 
-  match u with
-  | Val _ -> Single u
-  | Var v ->
-      let present = List.find_opt (fun (v1, v2) -> v = v1) s in
-      match present with
-      | None -> Single u
-      | Some (v1, v2) -> walk v2 s
-and walk (u: term_any) (s: substitution): term_any = 
+  
+let rec walk (u: term) (s: substitution): term = 
   match u with
   | Empty -> Empty
-  | Single t -> walk_single t s
+  | Val _ -> u
+  | Var v ->
+      let present = List.find_opt (fun (v1, v2) -> v = v1) s in
+      (match present with
+      | None -> u
+      | Some (v1, v2) -> walk v2 s)
   | List l -> match l with
-      | [] -> Empty
-      | _ -> u;;
+    | [] -> Empty
+    | _ -> u;;
 
-let ext_s (x: var) (v: term_any) (s: substitution): substitution = (x, v) :: s;;
+let ext_s (x: var) (v: term) (s: substitution): substitution = (x, v) :: s;;
 
-let rec unify (u: term_any) (v: term_any) (s: substitution option): substitution option = 
+let rec unify (u: term) (v: term) (s: substitution option): substitution option = 
   match s with
   | None -> None
   | Some s -> 
@@ -34,22 +31,22 @@ let rec unify (u: term_any) (v: term_any) (s: substitution option): substitution
       | List (hdu::tlu), List (hdv::tlv) ->
           let s = unify hdu hdv (Some s) in
           unify (List tlu) (List tlv) s
-      | Single (Var u), Single (Var v) -> Some (if var_eq u v then s else ext_s u (Single (Var v)) s)
-      | Single (Var u), _ -> Some (ext_s u v s)
-      | _, Single (Var v) -> Some (ext_s v u s)
+      | Var u, Var v -> Some (if var_eq u v then s else ext_s u (Var v) s)
+      | Var u, _ -> Some (ext_s u v s)
+      | _, Var v -> Some (ext_s v u s)
       | _ -> if u = v then Some s else None;;
 
-let eqeq (u: term_any) (v: term_any): state -> stream = 
+let eqeq (u: term) (v: term): state -> stream = 
   fun (s, c) ->
     let s = unify u v (Some s) in 
     match s with
     | None -> mzero
     | Some s -> unit (s, c)
 
-let call_fresh (f: term_any -> goal): goal = 
+let call_fresh (f: term -> goal): goal = 
   (* Consider cleaning up this notation? *)
   fun (s, c) ->
-    f (Single (Var c)) (s, c + 1);;
+    f (Var c) (s, c + 1);;
   
 let rec mplus (s1: stream) (s2: stream): stream = 
   match s1 with
