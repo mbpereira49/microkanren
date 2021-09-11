@@ -33,7 +33,7 @@ let rec unify (u: term_any) (v: term_any) (s: substitution option): substitution
       match u, v with
       | Empty, _ | _, Empty -> if u = v then Some s else None
       | List (hdu::tlu), List (hdv::tlv) ->
-          let s = unify (Single hdu) (Single hdv) (Some s) in
+          let s = unify hdu hdv (Some s) in
           unify (List tlu) (List tlv) s
       | Single (Var u), Single (Var v) -> Some (if var_eq u v then s else ext_s u (Single (Var v)) s)
       | Single (Var u), _ -> Some (ext_s u v s)
@@ -68,21 +68,14 @@ let conj (g1: goal) (g2: goal): goal =
 
 let empty_state = ([], 0);;
 let res =
-  (*let f = fun q ->
-
-    conj
-      (eqeq q (Single (Val 5)))
-      (eqeq q (Single (Val 6)))
-  in 
-  let goal = call_fresh f in
-  goal empty_state;;*)
-
   let goal = call_fresh
     (fun p ->
       call_fresh (fun q -> 
+        let l1 = List [p; Single (Val 7)] in
+        let l2 = List [Single (Val 9); Single (Val 7)] in
         (conj
           (eqeq q (Single (Val 5)))
-          (eqeq p q)
+          (eqeq l1 l2)
         )
         ))
   in

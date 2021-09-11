@@ -6,7 +6,7 @@ type term_single =
 type term_any =
   | Empty
   | Single of term_single
-  | List of term_single list;;
+  | List of term_any list;;
 type substitution = (var * term_any) list;;
 
 (*Consider making state a record*)

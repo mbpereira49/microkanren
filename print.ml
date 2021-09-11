@@ -9,15 +9,14 @@ let print_single_term (t: term_single): string =
   | Var v -> print_var v
   | Val v -> Printf.sprintf "%d" v;;
 
-let rec print_term_list (t: term_single list): string =
+let rec print_term_list (t: term_any list): string =
   match t with
   | [] -> ""
   | hd::tl -> 
-      let hd_string = print_single_term hd in
+      let hd_string = print_term hd in
       let tl_string = print_term_list tl in
-      Printf.sprintf "%s %s" hd_string tl_string;;
-
-let print_term (t: term_any): string =
+      Printf.sprintf "%s %s" hd_string tl_string
+and print_term (t: term_any): string =
   match t with
   | Empty -> ""
   | Single t -> print_single_term t
