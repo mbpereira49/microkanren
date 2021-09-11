@@ -51,8 +51,9 @@ let call_fresh (f: term -> goal): goal =
 let rec mplus (s1: stream) (s2: stream): stream = 
   match s1 with
   | [] -> s2
-  | hd::tl -> hd :: (mplus tl s2)
-and bind (s: stream) (g: goal): stream =
+  | hd::tl -> hd :: (mplus tl s2);;
+
+let rec bind (s: stream) (g: goal): stream =
   match s with
   | [] -> mzero
   | hd::tl -> mplus (g hd) (bind tl g);;
