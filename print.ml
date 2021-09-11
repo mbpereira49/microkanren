@@ -37,3 +37,16 @@ let rec print_stream_helper (str: stream): string =
 let print_stream (str: stream) =
   let repr = Printf.sprintf "[%s]\n" (print_stream_helper str) in
   print_string repr;;
+
+(*let print_list (l: 'a list) (f: 'a -> string) (start: string) (end: string) (sep: string): string =
+  let l_string = List.map f l in
+  let rec helper (l : string list): string = 
+    match l with
+    | [] -> ""
+    | [a] -> a
+    | hd::tl -> *)
+
+let print_list (l: 'a list) (f: 'a -> string) (start: string) (end: string) (sep: string): string =
+  let string_l = List.map f l in
+  let base = String.concat sep string_l in
+  start ^ base ^ end;;
