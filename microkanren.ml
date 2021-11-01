@@ -1,7 +1,7 @@
 open Types
 
-let mzero: stream = [];;
-let unit (st: state) = st::mzero;;
+let mzero: stream = Empty;;
+let unit (st: state) = Mature (st, mzero);;
 
 let var_eq (v1: var) (v2: var): bool = v1 = v2;;
   
@@ -40,23 +40,24 @@ let eqeq (u: term) (v: term): state -> stream =
   fun (s, c) ->
     let s = unify u v (Some s) in 
     match s with
-    | None -> mzero
+    | None -> Empty
     | Some s -> unit (s, c)
 
 let call_fresh (f: term -> goal): goal = 
-  (* Consider cleaning up this notation? *)
   fun (s, c) ->
     f (Var c) (s, c + 1);;
   
 let rec mplus (s1: stream) (s2: stream): stream = 
   match s1 with
-  | [] -> s2
-  | hd::tl -> hd :: (mplus tl s2);;
+  | Empty -> s2
+  | Immature f -> Immature (fun () -> mplus s2 (f ()))
+  | Mature (st, str) -> Mature (st, mplus str s2);;
 
 let rec bind (s: stream) (g: goal): stream =
   match s with
-  | [] -> mzero
-  | hd::tl -> mplus (g hd) (bind tl g);;
+  | Empty -> Empty
+  | Immature f -> Immature (fun () -> bind (f ()) g)
+  | Mature (st, str) -> mplus (g st) (bind str g);;
 
 let disj (g1: goal) (g2: goal): goal =
   fun st -> mplus (g1 st) (g2 st);;

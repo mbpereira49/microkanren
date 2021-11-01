@@ -22,5 +22,13 @@ let format_substitution (s: substitution) =
 let format_state ((s, c): state): string =
   sprintf "(%s, %d)" (format_substitution s) c;;
 
-let format_stream (str: stream): string =
-  sprintf "[%s]\n" (format_list str format_state ", ");;
+let rec coerce_states (str: stream) (n: int): state list =
+  if n <= 0 then [] else
+  match str with
+  | Empty -> []
+  | Immature f -> let st = f () in coerce_states st n
+  | Mature (st, str) -> st :: (coerce_states str (n - 1))
+
+let format_stream (str: stream) (n : int): string = 
+  let state_list = coerce_states str n in
+  sprintf "[%s]\n" (format_list state_list format_state ", ");;

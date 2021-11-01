@@ -9,6 +9,10 @@ type substitution = (var * term) list;;
 
 (*Consider making state a record*)
 type state = substitution * counter;;
-type stream = state list;;
+
+type stream = 
+  | Empty
+  | Immature of (unit -> stream)
+  | Mature of state * stream;;
 
 type goal = state -> stream;;
