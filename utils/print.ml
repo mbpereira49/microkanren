@@ -37,4 +37,4 @@ let rec coerce_states (str: 'a stream) (n: int): 'a state list =
 
 let format_stream (str: 'a stream) (n : int): string = 
   let state_list = coerce_states str n in
-  sprintf "[%s]\n" (format_list state_list format_state ", ");;
+  sprintf "%s\n" (format_list state_list format_state ",\n");;
