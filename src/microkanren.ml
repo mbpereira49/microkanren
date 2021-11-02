@@ -1,11 +1,11 @@
 open Types
 
-let mzero: 'a stream = Empty;;
-let unit (st: 'a state) = Mature (st, mzero);;
+let mzero: stream = Empty;;
+let unit (st: state) = Mature (st, mzero);;
 
 let var_eq (v1: var) (v2: var): bool = v1 = v2;;
   
-let rec walk (u: 'a term) (s: 'a substitution): 'a term = 
+let rec walk (u: term) (s: substitution): term = 
   match u with
   | Empty -> Empty
   | Val _ -> u
@@ -18,9 +18,9 @@ let rec walk (u: 'a term) (s: 'a substitution): 'a term =
     | [] -> Empty
     | _ -> u;;
 
-let ext_s (x: var) (v: 'a term) (s: 'a substitution): 'a substitution = (x, v) :: s;;
+let ext_s (x: var) (v: term) (s: substitution): substitution = (x, v) :: s;;
 
-let rec unify (u: 'a term) (v: 'a term) (s: 'a substitution option): 'a substitution option = 
+let rec unify (u: term) (v: term) (s: substitution option): substitution option = 
   match s with
   | None -> None
   | Some s -> 
@@ -36,30 +36,30 @@ let rec unify (u: 'a term) (v: 'a term) (s: 'a substitution option): 'a substitu
       | _, Var v -> Some (ext_s v u s)
       | _ -> if u = v then Some s else None;;
 
-let eq (u: 'a term) (v: 'a term): 'a state -> 'a stream = 
+let eq (u: term) (v: term): state -> stream = 
   fun (s, c) ->
     let s = unify u v (Some s) in 
     match s with
     | None -> Empty
     | Some s -> unit (s, c)
 
-let call_fresh (f: 'a term -> 'a goal): 'a goal = 
+let call_fresh (f: term -> goal): goal = 
   fun (s, c) ->
     f (Var c) (s, c + 1);;
   
-let rec mplus (s1: 'a stream) (s2: 'a stream): 'a stream = 
+let rec mplus (s1: stream) (s2: stream): stream = 
   match s1 with
   | Empty -> s2
   | Immature f -> Immature (fun () -> mplus s2 (f ()))
   | Mature (st, str) -> Mature (st, mplus str s2);;
 
-let rec bind (s: 'a stream) (g: 'a goal): 'a stream =
+let rec bind (s: stream) (g: goal): stream =
   match s with
   | Empty -> Empty
   | Immature f -> Immature (fun () -> bind (f ()) g)
   | Mature (st, str) -> mplus (g st) (bind str g);;
 
-let disj (g1: 'a goal) (g2: 'a goal): 'a goal =
+let disj (g1: goal) (g2: goal): goal =
   fun st -> mplus (g1 st) (g2 st);;
-let conj (g1: 'a goal) (g2: 'a goal): 'a goal = 
+let conj (g1: goal) (g2: goal): goal = 
   fun st -> bind (g1 st) g2;;

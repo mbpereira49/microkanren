@@ -3,14 +3,14 @@ open Types
 open Lazy
 
 
-let delay (g: 'a goal Lazy.t): 'a goal = 
+let delay (g: goal Lazy.t): goal = 
   fun st ->
     Immature (fun () -> (Lazy.force g) st)
 
 (* converts an int into a term *)
-let int_t (z : int): 'a term =
+let int_t (z : int): term =
   Val (Int z);;
 
 (* converts a term list into a term *)
-let list_t (l: 'a term list): 'a term = 
+let list_t (l: term list): term = 
   Val (List l);;

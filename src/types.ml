@@ -1,21 +1,21 @@
 type counter = int;;
 type var = int;;
-type 'a value = 
+type value = 
   | Int of int
-  | List of 'a term list
+  | List of term list
 and
-'a term =
+term =
   | Empty
   | Var of var
-  | Val of 'a value
-  | List of 'a term list;;
-type 'a substitution = (var * 'a term) list;;
+  | Val of value
+  | List of term list;;
+type substitution = (var * term) list;;
 
-type 'a state = 'a substitution * counter;;
+type state = substitution * counter;;
 
-type 'a stream = 
+type stream = 
   | Empty
-  | Immature of (unit -> 'a stream)
-  | Mature of 'a state * 'a stream;;
+  | Immature of (unit -> stream)
+  | Mature of state * stream;;
 
-type 'a goal = 'a state -> 'a stream;;
+type goal = state -> stream;;
