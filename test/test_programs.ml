@@ -7,25 +7,25 @@ let empty_state = ([], 0);;
 let a_and_b =
   conj
     (call_fresh (
-      fun a -> eq a (Val (Int 7))
+      fun a -> eq a (int_t 7)
     ))
     (call_fresh
       (fun b ->
         disj
-         (eq b (Val (Int 5))) 
-         (eq b (Val (Int 6)))
+         (eq b (int_t 5)) 
+         (eq b (int_t 6))
       )
     );;
 
 let rec fives x =
   disj
-    (eq x (Val (Int 5)))
+    (eq x (int_t 5))
     (fun (s, c) ->
       Immature (fun () ->
         (fives x) (s, c)));;
 let rec sixes x =
   disj
-    (eq x (Val (Int 6)))
+    (eq x (int_t 6))
     (delay (lazy (sixes x)));;
 let fives_and_sixes =
   call_fresh (
@@ -39,10 +39,10 @@ let lists = call_fresh
   (fun p ->
     call_fresh 
       (fun q -> 
-        let l1 = List [p; Val (Int 7)] in
-        let l2 = List [(Val (Int 9)); (Val (Int 7))] in
+        let l1 = List [p; int_t 7] in
+        let l2 = List [(int_t 9); (int_t 7)] in
         conj
-          (eq q (Val (Int 5)))
+          (eq q (int_t 5))
           (eq l1 l2)
       )
     );;
@@ -85,4 +85,4 @@ let call_appendo =
       )
   )
 
-let ground_appendo = appendo (Val (List [Val (Int 1)])) (Val (List [Val (Int 2)])) (Val (List [Val (Int 1); Val (Int 2)]));;
+let ground_appendo = appendo (list_t [int_t 1]) (list_t [int_t 2]) (list_t [int_t 1; int_t 2]);;
