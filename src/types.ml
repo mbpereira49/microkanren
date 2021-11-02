@@ -7,7 +7,6 @@ type term =
   | List of term list;;
 type substitution = (var * term) list;;
 
-(*Consider making state a record*)
 type state = substitution * counter;;
 
 type stream = 
