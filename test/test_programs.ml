@@ -85,4 +85,4 @@ let call_appendo =
       )
   )
 
-let ground_appendo = appendo (list_t [int_t 1]) (list_t [int_t 2]) (list_t [int_t 1; int_t 2]);;
+(* let ground_appendo = appendo (list_t [int_t 1]) (list_t [int_t 2]) (list_t [int_t 1; int_t 2]);; *)
