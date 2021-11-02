@@ -1,5 +1,5 @@
 # microkanren
-Implementation of microKanren using OCaml
+Implementation of [microKanren](http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf) using OCaml. Based on [original Scheme implementation](https://github.com/jasonhemann/microKanren).
 
 ## Usage
 Can run the tests via:
